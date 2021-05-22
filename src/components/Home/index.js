@@ -42,7 +42,7 @@ class HomePage extends Component {
                       loading: false,
                     });
                   });
-                  console.log(posts.length);
+                  console.log(posts);
                 }).catch(error => {
                   console.log(error);
                 });
@@ -50,11 +50,6 @@ class HomePage extends Component {
             }).catch(error => {
               console.log(error);
             });            
-
-    // this.setState({
-    //   users: posts,
-    //   loading: false,
-    // });
   }
 
   render() {
@@ -79,13 +74,16 @@ const PostList = ({ users }) => (
     {users.map(user => (
       <li key={user.id}>
         <span>
-          <strong>ID:</strong> {user.image}
-        </span>
-        <span>
           <strong>Title:</strong> {user.title}
         </span>
         <span>
+          <strong>Location:</strong> {user.location}
+        </span>
+        <span>
           <strong>Body:</strong> {user.body}
+        </span>
+        <span>
+          <strong>Image link:</strong> {user.image}
         </span>
       </li>
     ))}
