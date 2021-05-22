@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
 import { withFirebase } from '../Firebase';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 class HomePage extends Component {
   constructor(props) {
@@ -29,7 +36,7 @@ class HomePage extends Component {
 
             firstUserList.forEach(user => {
               this.props.firebase.db.collection('posts').doc(user).
-              collection('userPosts').get()
+              collection('userPosts').orderBy("creation", "desc").get()
                 .then(response => {
                   response.forEach(document => {
                     const fetchedPost = {
@@ -69,25 +76,45 @@ class HomePage extends Component {
   }
 }
 
+function preventDefault(event) {
+  event.preventDefault();
+}
+
+const useStyles = makeStyles((theme) => ({
+  seeMore: {
+    marginTop: theme.spacing(3),
+  },
+}));
+
 const PostList = ({ users }) => (
-  <ul>   
-    {users.map(user => (
-      <li key={user.id}>
-        <span>
-          <strong>Title:</strong> {user.title}
-        </span>
-        <span>
-          <strong>Location:</strong> {user.location}
-        </span>
-        <span>
-          <strong>Body:</strong> {user.body}
-        </span>
-        <span>
-          <strong>Image link:</strong> {user.image}
-        </span>
-      </li>
-    ))}
-  </ul>
+  <div>
+  <h1>Title</h1>
+  <Table size="small">
+    <TableHead>
+      <TableRow>
+        <TableCell>Title</TableCell>
+        <TableCell>Location</TableCell>
+        <TableCell>Body</TableCell>
+        <TableCell>Image Link</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {users.map((row) => (
+        <TableRow key={row.id}>
+          <TableCell>{row.title}</TableCell>
+          <TableCell>{row.location}</TableCell>
+          <TableCell>{row.body}</TableCell>
+          <TableCell>{row.image}</TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+  {/* <div className={classes.seeMore}>
+    <Link color="primary" href="#" onClick={preventDefault}>
+      See more orders
+    </Link>
+  </div> */}
+  </div>
 );
 
 export default withFirebase(HomePage);
