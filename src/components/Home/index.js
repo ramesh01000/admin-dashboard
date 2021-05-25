@@ -9,6 +9,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import IconButton from '@material-ui/core/IconButton';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
+import Typography from '@material-ui/core/Typography';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+
 
 class HomePage extends Component {
   constructor(props) {
@@ -62,12 +68,37 @@ class HomePage extends Component {
             });            
   }
 
-  updateTemp(userID, postID) {
-    console.log(userID);
+  updateTemp(userID, postID, choice) {
+
+    console.log(postID);
+
+    if(choice == 4) {
+          console.log(userID);
     this.setState({ users: this.state.users.filter(function(user) { 
       return user.id !== postID })});
+    }
 
+      if(choice == 1) {
+        this.props.firebase.db.collection('posts').doc(userID)
+                .collection('userPosts').doc(postID).set({
+          status: 'Processing'
+      }, { merge: true });
+      }
+
+    if(choice == 2) {
+      this.props.firebase.db.collection('posts').doc(userID)
+              .collection('userPosts').doc(postID).set({
+        status: 'Assigned to Operator'
+    }, { merge: true });
+    }
+
+  if(choice == 3) {
+    this.props.firebase.db.collection('posts').doc(userID)
+            .collection('userPosts').doc(postID).set({
+      status: 'Work in Progress'
+  }, { merge: true });
   }
+}
 
   updateStatus(userID, postID) { 
 
@@ -93,22 +124,29 @@ class HomePage extends Component {
                 });        
   }
 
+  // handleChange = event => {
+  //   //setAge(event.target.value);
+  //   console.log(event.target.value);
+  // };
+
   render() {
     const { users, loading } = this.state;
  
     return (
       <div>
-        <h1>Home Page</h1>
+        <Typography component="h2" variant="h6" color="primary" gutterBottom>
+            Complaints
+        </Typography>
  
         {loading && <div>Loading ...</div>}
  
         {/* <PostList users={users} /> */}
 
         <div>
-          <h1>Table</h1>
           <Table size="small">
             <TableHead>
               <TableRow>
+              <TableCell>Department</TableCell>
                 <TableCell>Title</TableCell>
                 <TableCell>Location</TableCell>
                 <TableCell>Body</TableCell>
@@ -119,16 +157,36 @@ class HomePage extends Component {
             <TableBody>
               {users.map((row) => (
                 <TableRow key={row.id}>
+                  <TableCell>{row.type[0]}</TableCell>
                   <TableCell>{row.title}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.body}</TableCell>
-                  <TableCell>{row.image}</TableCell>
-                  <TableCell>{row.status}
+                  <TableCell>{row.image && <a href={row.image}>Image</a>}</TableCell>
+                  <TableCell>
+
+                  <FormControl className={useStyles.formControl}>
+                  <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      displayEmpty
+                      //value={row.status}
+                      className={useStyles.selectEmpty}
+                      onChange={(event) => { this.updateTemp(row.user, row.id, event.target.value) }}
+                    >
+                      <MenuItem value={1}>Processing</MenuItem>
+                      <MenuItem value={2}>Assigned to Operator</MenuItem>
+                      <MenuItem value={3}>Work in Progress</MenuItem>
+                      <MenuItem value={4}>Completed</MenuItem>
+                    </Select>
+                    <FormHelperText>{row.status}</FormHelperText>
+                  </FormControl>
+                    
+                    {/* {row.status}
                   <IconButton aria-label="done" 
                   className={useStyles.root}
                   onClick={() => { this.updateTemp(row.user, row.id) }}>
                     <DoneAllIcon />
-                  </IconButton>
+                  </IconButton> */}
 
                   </TableCell>
                 </TableRow>
@@ -148,6 +206,13 @@ function preventDefault(event) {
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -186,7 +251,7 @@ const useStyles = makeStyles((theme) => ({
 //       ))}
 //     </TableBody>
 //   </Table>
-//   {/* <div className={classes.seeMore}>
+//   {/* <div className={useStyles.seeMore}>
 //     <Link color="primary" href="#" onClick={preventDefault}>
 //       See more orders
 //     </Link>
