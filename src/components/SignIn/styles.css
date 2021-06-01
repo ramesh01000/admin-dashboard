@@ -1,0 +1,12 @@
+h1{
+    color: aqua;
+}
+
+li{
+    list-style: none;
+    text-decoration: none;
+    display: flex;
+    flex-direction: row;
+
+
+}
